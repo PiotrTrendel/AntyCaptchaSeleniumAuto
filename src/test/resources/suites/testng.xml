@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Testing of API with students details db">
+    <listeners>
+        <listener class-name="org.listeners.MyListener"></listener>
+    </listeners>
+    <test name="Functional testing">
+        <classes>
+            <class name="org.functional.StudentsDetailsTest"/>
+        </classes>
+    </test>
+</suite>
