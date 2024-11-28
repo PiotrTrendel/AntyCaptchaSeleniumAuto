@@ -1,76 +1,67 @@
-package antycaptcha.pages;
+package antycaptcha.pages.base;
 
-import antycaptcha.utilities.ConfigManager;
-import org.openqa.selenium.By;
+import antycaptcha.utilities.ByConverter;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.util.List;
+
+import static antycaptcha.utilities.ConfigManager.getConfigProperty;
 
 public class BasePage {
 
-    protected WebDriver driver;
-    protected WebDriverWait wait;
-
-    public BasePage(WebDriver driver) {
-        this.driver = driver;
-        this.wait = new WebDriverWait(driver, ConfigManager.getConfigPropertyLong("waits.timeout-seconds"));
+    private WebElement waitForElementToBeVisible(WebDriver driver, WebElement element) {
+        WebDriverWait wait = new WebDriverWait(driver, Long.parseLong(getConfigProperty("waits.timeout-seconds")));
+        return wait.until(ExpectedConditions.visibilityOf(element));
     }
 
-    protected WebElement waitForElementToBeVisible(By locator) {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+    private WebElement waitForElementToBePresent(WebDriver driver, WebElement element) {
+        WebDriverWait wait = new WebDriverWait(driver, Long.parseLong(getConfigProperty("waits.timeout-seconds")));
+        return wait.until(ExpectedConditions.presenceOfElementLocated(ByConverter.toByVal(element)));
     }
 
-    protected WebElement waitForElementToBeClickable(By locator) {
-        return wait.until(ExpectedConditions.elementToBeClickable(locator));
+    private WebElement waitForElementToBeClickable(WebDriver driver, WebElement element) {
+        WebDriverWait wait = new WebDriverWait(driver, Long.parseLong(getConfigProperty("waits.timeout-seconds")));
+        return wait.until(ExpectedConditions.elementToBeClickable(element));
     }
 
-    protected void clickElement(By locator) {
-        WebElement element = waitForElementToBeClickable(locator);
-        element.click();
+    protected void clickElement(WebDriver driver, WebElement element) {
+        waitForElementToBeClickable(driver, element).click();
     }
 
-    protected void typeText(By locator, String text) {
-        WebElement element = waitForElementToBeVisible(locator);
-        element.clear();
+    protected void typeText(WebDriver driver, WebElement element, String text) {
+        waitForElementToBeVisible(driver, element).clear();
         element.sendKeys(text);
     }
 
-    protected String getText(By locator) {
-        WebElement element = waitForElementToBeVisible(locator);
-        return element.getText();
+    protected String getText(WebDriver driver, WebElement element) {
+        return waitForElementToBeVisible(driver, element).getText();
     }
 
-    protected boolean isElementVisible(By locator) {
-        try {
-            WebElement element = waitForElementToBeVisible(locator);
-            return element.isDisplayed();
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    protected boolean isElementPresent(By locator) {
-        try {
-            driver.findElement(locator);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    protected boolean isElementClickable(By locator) {
-        try {
-            WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
-            return element.isEnabled();
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    protected void selectDropdownOption(By locator, String optionText) {
-        WebElement element = waitForElementToBeVisible(locator);
-        org.openqa.selenium.support.ui.Select select = new org.openqa.selenium.support.ui.Select(element);
+    protected void selectDropdownOption(WebDriver driver, WebElement element, String optionText) {
+        Select select = new Select(waitForElementToBeVisible(driver, element));
         select.selectByVisibleText(optionText);
+    }
+
+    protected void selectDropdownOptionWithExclusion(WebDriver driver, WebElement element, String optionTextToBeExcluded) {
+        Select select = new Select(waitForElementToBeVisible(driver, element));
+        List<WebElement> options = select.getOptions();
+
+        for (int i = 0; i < options.size(); i++) {
+            if (!options.get(i).getText().equals(optionTextToBeExcluded)) {
+                select.selectByIndex(i);
+                System.out.println("Next option selected: " + options.get(i).getText());
+                break;
+            }
+        }
+    }
+
+    protected void scrollTo(WebDriver driver, WebElement element) {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("arguments[0].scrollIntoView(true);", element);
     }
 }
