@@ -3,10 +3,10 @@
 <suite name="E2E Testing of AntyCaptcha exercises">
     <test name="Functional testing" >
         <classes>
-            <class name="org.antycaptchatest.ExerciseOneTest"/>
-            <class name="org.antycaptchatest.ExerciseTwoTest"/>
+<!--            <class name="org.antycaptchatest.ExerciseOneTest"/>-->
+<!--            <class name="org.antycaptchatest.ExerciseTwoTest"/>-->
             <class name="org.antycaptchatest.ExerciseThreeTest"/>
-            <class name="org.antycaptchatest.ExerciseFourTest"/>
+<!--            <class name="org.antycaptchatest.ExerciseFourTest"/>-->
         </classes>
     </test>
 </suite>

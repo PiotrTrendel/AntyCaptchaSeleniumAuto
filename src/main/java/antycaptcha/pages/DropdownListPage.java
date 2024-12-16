@@ -7,10 +7,10 @@ import org.openqa.selenium.support.FindBy;
 
 public class DropdownListPage extends Solutions {
 
-    @FindBy(xpath = "//code[@class='wrap']")
+    @FindBy(css = ".wrap")
     protected WebElement solutionText;
 
-    @FindBy(xpath = "//tr[2]/td[2]/code")
+    @FindBy(xpath = "//td[contains(text(),'choose')]//code")
     protected WebElement colourToBeSelected;
 
     @FindBy(id = "s13")
