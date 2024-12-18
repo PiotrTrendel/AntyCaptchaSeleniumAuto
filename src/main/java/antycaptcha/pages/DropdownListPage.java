@@ -8,16 +8,16 @@ import org.openqa.selenium.support.FindBy;
 public class DropdownListPage extends Solutions {
 
     @FindBy(css = ".wrap")
-    protected WebElement solutionText;
+    private WebElement solutionText;
 
     @FindBy(xpath = "//td[contains(text(),'choose')]//code")
-    protected WebElement colourToBeSelected;
+    private WebElement colourToBeSelected;
 
     @FindBy(id = "s13")
-    protected WebElement colourDropdown;
+    private WebElement colourDropdown;
 
     @FindBy(id = "solution")
-    protected WebElement checkSolutionButton;
+    private WebElement checkSolutionButton;
 
 
     private String getColourToBeSelected(WebDriver driver) {
@@ -33,9 +33,20 @@ public class DropdownListPage extends Solutions {
     }
 
     @Override
-    protected void checkSolution(WebDriver driver, Boolean isConditionMet) {
+    protected void doExercise(WebDriver driver, Boolean isConditionMet) {
         selectColourFromDropdown(driver, isConditionMet);
+    }
+
+    public void checkSolution(WebDriver driver) {
         clickElement(driver, checkSolutionButton);
+    }
+
+    public void selectValidColour(WebDriver driver) {
+        doExercise(driver, true);
+    }
+
+    public void selectInvalidColour(WebDriver driver) {
+        doExercise(driver, false);
     }
 
     @Override

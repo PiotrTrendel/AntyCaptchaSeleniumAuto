@@ -17,11 +17,15 @@ public class ExerciseTwoTest extends BaseTest {
 
     @Test(description = "Solution is properly validated if user entered correct text to editbox")
     public void performExerciseTwoPositive() {
-        Assert.assertTrue(exTwoPage.isSolutionCorrect(driver));
+        exTwoPage.enterValidText(driver);
+        exTwoPage.checkSolution(driver);
+        Assert.assertTrue(exTwoPage.isSolutionValid(driver, true), "Text entered is incorrect");
     }
 
     @Test (description = "Solution is incorrectly validated if user entered incorrect text to editbox", priority = 1)
     public void performExerciseTwoNegative() {
-        Assert.assertTrue(exTwoPage.isSolutionIncorrect(driver));
+        exTwoPage.enterInvalidText(driver);
+        exTwoPage.checkSolution(driver);
+        Assert.assertTrue(exTwoPage.isSolutionValid(driver, false), "Text entered is correct but shouldn't be");
     }
 }

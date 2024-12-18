@@ -17,14 +17,15 @@ public class ExerciseOneTest extends BaseTest {
 
     @Test (description = "Solution is properly validated if user followed the trail")
     public void performExerciseOnePositive() {
-        Assert.assertTrue(exOnePage.isSolutionCorrect(driver), "coś tam coś tam");
+        exOnePage.clickButtonsFollowingTrail(driver);
+        exOnePage.checkSolution(driver);
+        Assert.assertTrue(exOnePage.isSolutionValid(driver, true), "Buttons were clicked in wrong order");
     }
 
     @Test (description = "Solution is incorrectly validated if user didn't follow the trail", priority = 1)
     public void performExerciseOneNegative() {
-        //1. wejście na stronę
-        //2. wykonanie zadania/części zadania
-        //3. assercja
-        Assert.assertTrue(exOnePage.isSolutionIncorrect(driver));
+        exOnePage.clickWrongButtons(driver);
+        exOnePage.checkSolution(driver);
+        Assert.assertTrue(exOnePage.isSolutionValid(driver, false), "Buttons were clicked in good order but shouldn't be");
     }
 }

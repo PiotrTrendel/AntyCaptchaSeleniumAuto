@@ -27,12 +27,4 @@ public class ConfigManager {
         return value;
     }
 
-    public static Long getConfigPropertyLong(String propertyName) {
-        Long value = Long.parseLong(properties.getProperty(propertyName));
-        if (value == null) {
-            throw new IllegalArgumentException("Property '" + propertyName + "' not found in configuration file.");
-        }
-        return value;
-    }
-
 }

@@ -9,72 +9,70 @@ import org.openqa.selenium.support.FindBy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static antycaptcha.utilities.ConfigManager.getConfigProperty;
 
 public class RadioButtonsPage extends Solutions {
 
-    @FindBy(xpath = "//tbody/tr/td[2]/code")
-    protected List<WebElement> coloursToBeClicked;
+    @FindBy(xpath = "//td[contains(text(),\"In the group\")]/code")
+    private List<WebElement> coloursToBeClicked;
 
     @FindBy(xpath = "//div[@class='six columns']")
-    protected List<WebElement> groups;
+    private List<WebElement> groups;
 
     @FindBy(id = "solution")
-    protected WebElement checkSolutionButton;
+    private WebElement checkSolutionButton;
 
     @FindBy(xpath = "//code[@class='wrap']")
-    protected WebElement solutionText;
+    private WebElement solutionText;
 
 
-    private List<String> getColoursToBeClicked(WebDriver driver) {
-        List<String> coloursAsString = new ArrayList<>();
-        for (WebElement colour : coloursToBeClicked) {
-            String text = getText(driver, colour);
-            coloursAsString.add(text);
-        }
-        return coloursAsString;
+    private List<String> getColoursToBeClicked() {
+        return coloursToBeClicked.stream()
+                .map(WebElement::getText)
+                .collect(Collectors.toList());
     }
 
-    private ArrayList<String> getColoursAvailableByGroupId(WebDriver driver, int groupId) {
+    private List<String> getColoursAvailableByGroupId(int groupId) {
         WebElement group = groups.get(groupId);
-        String[] coloursAvailable = getText(driver, group).split("\n");
-        ArrayList<String> coloursAvailableAsList = new ArrayList<>(Arrays.asList(coloursAvailable));
-        coloursAvailableAsList.removeFirst();
-        return coloursAvailableAsList;
+        List<String> colours = Arrays.asList(group.getText().split("\n"));
+        return colours.subList(1, colours.size());
     }
 
     private List<WebElement> getRadioButtonsByGroupId(int groupId) {
-        WebElement group = groups.get(groupId);
-        List<WebElement> radioButtons = group.findElements(By.xpath(".//input[@type='radio']"));
-        return radioButtons;
+        return groups.get(groupId).findElements(By.xpath(getConfigProperty("colour.buttons")));
     }
 
-    private void clickButtonsInEachGroup(WebDriver driver, Boolean isTrailCorrect) {
-        List<String> colours = getColoursToBeClicked(driver);
-        for (int i=0; i<colours.size(); i++) {
-            ArrayList<String> coloursAvailable = getColoursAvailableByGroupId(driver, i);
-            for (int j=0; j<coloursAvailable.size(); j++) {
-                if(coloursAvailable.get(j).equals(colours.get(i)) && isTrailCorrect) {
-                    WebElement radioButton = getRadioButtonsByGroupId(i).get(j);
-                    clickElement(driver, radioButton);
-                    break;
-                } else if (coloursAvailable.get(j).equals(colours.get(i)) && !isTrailCorrect) {
-                    WebElement radioButton;
-                    if (getRadioButtonsByGroupId(i).size() == j) {
-                        radioButton = getRadioButtonsByGroupId(i).getFirst();
-                    } else {
-                        radioButton = getRadioButtonsByGroupId(i).getLast();
-                    }
-                    clickElement(driver, radioButton);
-                    break;
-                }
+    private void clickButtonsInEachGroup(WebDriver driver, boolean isTrailCorrect) {
+        List<String> coloursToClick = getColoursToBeClicked();
+        for (int groupId = 0; groupId < coloursToClick.size(); groupId++) {
+            String targetColour = coloursToClick.get(groupId);
+            List<String> availableColours = getColoursAvailableByGroupId(groupId);
+            List<WebElement> radioButtons = getRadioButtonsByGroupId(groupId);
+            int index = availableColours.indexOf(targetColour);
+            if (index != -1) {
+                WebElement radioButton = isTrailCorrect && index < radioButtons.size() ? radioButtons.get(index) : radioButtons.get(0);
+                clickElement(driver, radioButton);
             }
         }
     }
 
     @Override
-    protected void checkSolution(WebDriver driver, Boolean isTrailCorrect) {
+    protected void doExercise(WebDriver driver, Boolean isTrailCorrect) {
         clickButtonsInEachGroup(driver, isTrailCorrect);
+    }
+
+    public void checkSolution(WebDriver driver) {
         clickElement(driver, checkSolutionButton);
+    }
+
+    public void clickRequiredRadioButtons(WebDriver driver) {
+        doExercise(driver, true);
+    }
+
+    public void clickWrongRadioButtons(WebDriver driver) {
+        doExercise(driver, false);
     }
 
     @Override

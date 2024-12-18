@@ -1,35 +1,32 @@
 package antycaptcha.pages;
 
-import antycaptcha.pages.base.BasePage;
 import antycaptcha.pages.base.Solutions;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-import static antycaptcha.utilities.ConfigManager.getConfigProperty;
-
 public class EditboxPage extends Solutions {
 
-    @FindBy(css = "tbody tr:nth-child(2) td:nth-child(2) code:nth-child(1)")
-    protected WebElement tdWithText;
+    @FindBy(xpath = "//td[contains(text(),\"Enter text\")]/code[1]")
+    private WebElement textToRetype;
 
     @FindBy(id = "t14")
-    protected WebElement editbox;
+    private WebElement editbox;
 
     @FindBy(id = "btnButton1")
-    protected WebElement buttonOne;
+    private WebElement buttonOne;
 
     @FindBy(id = "solution")
-    protected WebElement checkSolutionButton;
+    private WebElement checkSolutionButton;
 
     @FindBy(xpath = "//code[@class='wrap']")
-    protected WebElement solutionText;
+    private WebElement solutionText;
 
     private String getTextToRetype(WebDriver driver, Boolean isTextCorrect) {
         if (isTextCorrect) {
-            return getText(driver, tdWithText);
+            return getText(driver, textToRetype);
         } else {
-            return getText(driver, tdWithText) + "123";
+            return getText(driver, textToRetype) + "123";
         }
     }
 
@@ -38,10 +35,21 @@ public class EditboxPage extends Solutions {
     }
 
     @Override
-    protected void checkSolution(WebDriver driver, Boolean isTextCorrect){
+    protected void doExercise(WebDriver driver, Boolean isTextCorrect){
         retypeText(driver, isTextCorrect);
         clickElement(driver, buttonOne);
+    }
+
+    public void checkSolution(WebDriver driver) {
         clickElement(driver, checkSolutionButton);
+    }
+
+    public void enterValidText(WebDriver driver) {
+        doExercise(driver, true);
+    }
+
+    public void enterInvalidText(WebDriver driver) {
+        doExercise(driver, false);
     }
 
     @Override

@@ -1,76 +1,65 @@
 package antycaptcha.pages;
 
-import antycaptcha.pages.base.BasePage;
 import antycaptcha.pages.base.Solutions;
 import antycaptcha.utilities.AttributeExtractor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-import java.util.Arrays;
 import java.util.List;
-
-import static antycaptcha.utilities.ConfigManager.getConfigProperty;
 
 public class ThreeButtonsPage extends Solutions {
 
-    @FindBy(xpath = "//tr[5]/td[3]")
-    protected WebElement trail;
+    @FindBy(xpath = "//td[contains(text(),'Trail set to:')]")
+    private WebElement trail;
 
-    @FindBy(xpath = "//button[@id='btnButton1']")
-    protected WebElement firstAnswerButton;
+    @FindBy(id = "btnButton1")
+    private WebElement firstAnswerButton;
 
-    @FindBy(xpath = "//button[@id='btnButton2']")
-    protected WebElement secondAnswerButton;
+    @FindBy(id = "btnButton2")
+    private WebElement secondAnswerButton;
 
-    @FindBy(xpath = "//button[@id='solution']")
-    protected WebElement checkSolutionButton;
+    @FindBy(id = "solution")
+    private WebElement checkSolutionButton;
 
     @FindBy(xpath = "//code[@class='wrap']")
-    protected WebElement solutionText;
+    private WebElement solutionText;
 
 
     private List<String> getTrailSteps(WebDriver driver) {
         AttributeExtractor trailExtractor = new AttributeExtractor();
-        return Arrays.stream(trailExtractor.extractTrail(getText(driver, trail)).split("(?<=\\d)(?=b)")).toList();
+        String trailText = getText(driver, trail);
+        return List.of(trailExtractor.extractTrail(trailText).split("(?<=\\d)(?=b)"));
     }
 
-    private void clickFirstAnswer(WebDriver driver) {
-        clickElement(driver, firstAnswerButton);
-    }
-
-    private void clickSecondAnswer(WebDriver driver) {
-        clickElement(driver, secondAnswerButton);
-    }
-
-    private void followTheTrail(WebDriver driver, Boolean isTrailCorrect) {
-        List<String> correctAnswers = getTrailSteps(driver);
-        scrollTo(driver, checkSolutionButton);
-        for (String answer : correctAnswers) {
-            switch (answer) {
-                case "b1":
-                    if (!isTrailCorrect) {
-                        clickSecondAnswer(driver);
-                    } else {
-                        clickFirstAnswer(driver);
-                    }
-                    break;
-                case "b2":
-                    if (!isTrailCorrect) {
-                        clickFirstAnswer(driver);
-                    } else {
-                        clickSecondAnswer(driver);
-                    }
-                    break;
-                default:
-                    System.out.println("no such step");
-            }
+    private void clickButtonByStep(WebDriver driver, String step, boolean isTrailCorrect) {
+        switch (step) {
+            case "b1" -> clickElement(driver, isTrailCorrect ? firstAnswerButton : secondAnswerButton);
+            case "b2" -> clickElement(driver, isTrailCorrect ? secondAnswerButton : firstAnswerButton);
+            default -> System.err.println("Button not recognized: " + step);
         }
     }
 
+    private void followTheTrail(WebDriver driver, boolean isTrailCorrect) {
+        List<String> steps = getTrailSteps(driver);
+        scrollTo(driver, checkSolutionButton);
+        steps.forEach(step -> clickButtonByStep(driver, step, isTrailCorrect));
+    }
+
     @Override
-    protected void checkSolution(WebDriver driver, Boolean isTrailCorrect){
+    protected void doExercise(WebDriver driver, Boolean isTrailCorrect){
         followTheTrail(driver, isTrailCorrect);
+    }
+
+    public void clickButtonsFollowingTrail(WebDriver driver) {
+        doExercise(driver, true);
+    }
+
+    public void clickWrongButtons(WebDriver driver) {
+        doExercise(driver, false);
+    }
+
+    public void checkSolution(WebDriver driver) {
         clickElement(driver, checkSolutionButton);
     }
 

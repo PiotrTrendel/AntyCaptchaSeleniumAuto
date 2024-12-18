@@ -8,7 +8,7 @@ import org.openqa.selenium.support.FindBy;
 public class MainPage extends BasePage {
 
     @FindBy(xpath = "//a[@href='/general_exercises']")
-    protected WebElement exercisesButton;
+    private WebElement exercisesButton;
 
     public void clickExercisesButton(WebDriver driver) {
         clickElement(driver, exercisesButton);

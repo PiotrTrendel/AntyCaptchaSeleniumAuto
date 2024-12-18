@@ -17,11 +17,15 @@ public class ExerciseThreeTest extends BaseTest {
 
     @Test(description = "Solution is properly validated if user selected matching colour from dropdown list")
     public void performExerciseThreePositive() {
-        Assert.assertTrue(exThreePage.isSolutionCorrect(driver));
+        exThreePage.selectValidColour(driver);
+        exThreePage.checkSolution(driver);
+        Assert.assertTrue(exThreePage.isSolutionValid(driver, true),"Wrong colour was selected");
     }
 
     @Test (description = "Solution is incorrectly validated if user selected mismatching colour from dropdown list", priority = 1)
     public void performExerciseThreeNegative() {
-        Assert.assertTrue(exThreePage.isSolutionIncorrect(driver));
+        exThreePage.selectInvalidColour(driver);
+        exThreePage.checkSolution(driver);
+        Assert.assertTrue(exThreePage.isSolutionValid(driver, false),"Correct colour was selected but shouldn't be");
     }
 }

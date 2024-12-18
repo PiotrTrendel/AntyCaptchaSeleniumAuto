@@ -1,10 +1,10 @@
 package org.antycaptchatest;
 
 import antycaptcha.pages.*;
-import antycaptcha.utilities.DriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 
 import static antycaptcha.utilities.ConfigManager.getConfigProperty;
 import static antycaptcha.utilities.DriverManager.*;
@@ -20,22 +20,28 @@ class BaseTest {
     protected RadioButtonsPage exFourPage;
 
 
-    @BeforeMethod(dependsOnMethods = "setUp")
-    public void initializePages() {
+    @BeforeMethod
+    public void setUp() {
+        try {
+            driver = getDriver(getConfigProperty("browser-name"));
+            driver.manage().window().maximize();
+            driver.get(getConfigProperty("base-url"));
+            initializePages();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to set up WebDriver or load the base URL", e);
+        }
+    }
+
+    private void initializePages() {
         mainPage = PageFactory.initElements(driver, MainPage.class);
         genExPage = PageFactory.initElements(driver, GeneralExercisesPage.class);
     }
 
-    @BeforeMethod
-    public void setUp() {
-        driver = getDriver(getConfigProperty("browser-name"));
-        driver.manage().window().maximize();
-        driver.get(getConfigProperty("base-url"));
-    }
-
     @AfterMethod
     public void tearDown() {
-        quitDriver(driver);
-        cleanUp();
+        if (driver != null) {
+            quitDriver(driver);
+        }
     }
+
 }

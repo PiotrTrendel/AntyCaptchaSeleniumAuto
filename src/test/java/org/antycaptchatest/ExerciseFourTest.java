@@ -17,11 +17,15 @@ public class ExerciseFourTest extends BaseTest {
 
     @Test(description = "Solution is properly validated if user selected matching colour from dropdown list")
     public void performExerciseFourPositive() {
-        Assert.assertTrue(exFourPage.isSolutionCorrect(driver));
+        exFourPage.clickRequiredRadioButtons(driver);
+        exFourPage.checkSolution(driver);
+        Assert.assertTrue(exFourPage.isSolutionValid(driver, true), "Wrong buttons were clicked");
     }
 
     @Test (description = "Solution is incorrectly validated if user selected mismatching colour from dropdown list", priority = 1)
     public void performExerciseFourNegative() {
-        Assert.assertTrue(exFourPage.isSolutionIncorrect(driver));
+        exFourPage.clickWrongRadioButtons(driver);
+        exFourPage.checkSolution(driver);
+        Assert.assertTrue(exFourPage.isSolutionValid(driver, false), "Correct buttons were clicked but shouldn't be");
     }
 }
