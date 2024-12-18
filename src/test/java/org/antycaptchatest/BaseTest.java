@@ -1,16 +1,13 @@
-package antycaptchatest;
+package org.antycaptchatest;
 
-import antycaptcha.pages.GeneralExercisesPage;
-import antycaptcha.pages.MainPage;
-import antycaptcha.pages.ThreeButtonsPage;
+import antycaptcha.pages.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeSuite;
 
 import static antycaptcha.utilities.ConfigManager.getConfigProperty;
-import static antycaptcha.utilities.DriverManager.getDriver;
+import static antycaptcha.utilities.DriverManager.*;
 
 class BaseTest {
 
@@ -18,25 +15,33 @@ class BaseTest {
     protected MainPage mainPage;
     protected GeneralExercisesPage genExPage;
     protected ThreeButtonsPage exOnePage;
+    protected EditboxPage exTwoPage;
+    protected DropdownListPage exThreePage;
+    protected RadioButtonsPage exFourPage;
 
-    @BeforeSuite
-    public void initializePages() {
-        driver = getDriver(getConfigProperty("browser-name"));
-        mainPage = PageFactory.initElements(driver, MainPage.class);
-        genExPage = PageFactory.initElements(driver, GeneralExercisesPage.class);
-        exOnePage = PageFactory.initElements(driver, ThreeButtonsPage.class);
-    }
 
     @BeforeMethod
     public void setUp() {
-        driver.manage().window().maximize();
-        driver.get(getConfigProperty("base-url"));
+        try {
+            driver = getDriver(getConfigProperty("browser-name"));
+            driver.manage().window().maximize();
+            driver.get(getConfigProperty("base-url"));
+            initializePages();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to set up WebDriver or load the base URL", e);
+        }
+    }
+
+    private void initializePages() {
+        mainPage = PageFactory.initElements(driver, MainPage.class);
+        genExPage = PageFactory.initElements(driver, GeneralExercisesPage.class);
     }
 
     @AfterMethod
     public void tearDown() {
         if (driver != null) {
-            driver.quit();
+            quitDriver(driver);
         }
     }
+
 }

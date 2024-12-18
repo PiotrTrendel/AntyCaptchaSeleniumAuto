@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="Testing of API with students details db">
-    <listeners>
-        <listener class-name="org.listeners.MyListener"></listener>
-    </listeners>
-    <test name="Functional testing">
+<suite name="E2E Testing of AntyCaptcha exercises">
+    <test name="Functional testing" >
         <classes>
-            <class name="org.functional.StudentsDetailsTest"/>
+            <class name="org.antycaptchatest.ExerciseOneTest"/>
+            <class name="org.antycaptchatest.ExerciseTwoTest"/>
+            <class name="org.antycaptchatest.ExerciseThreeTest"/>
+            <class name="org.antycaptchatest.ExerciseFourTest"/>
         </classes>
     </test>
 </suite>
